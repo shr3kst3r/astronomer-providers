@@ -59,6 +59,7 @@ class AzureDataFactoryRunPipelineOperatorAsync(AzureDataFactoryRunPipelineOperat
                 wait_for_termination=self.wait_for_termination,
                 resource_group_name=self.resource_group_name,
                 factory_name=self.factory_name,
+                check_interval=self.check_interval,
             ),
             method_name="execute_complete",
         )

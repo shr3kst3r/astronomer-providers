@@ -3,15 +3,17 @@ from typing import AsyncIterator, Tuple, Dict, Any
 from airflow.triggers.base import BaseTrigger, TriggerEvent
 from astronomer.providers.microsoft.azure.hooks.data_factory import AzureDataFactoryHookAsync
 
+
 class AzureDataFactoryTrigger(BaseTrigger):
 
     def __init__(
             self,
-            azure_data_factory_conn_id: str,
             run_id: str,
             wait_for_termination: bool,
             resource_group_name: str,
             factory_name: str,
+            check_interval: int = 60,
+            azure_data_factory_conn_id: str = "azure_data_factory_default",
     ):
         self.azure_data_factory_conn_id = azure_data_factory_conn_id
         self.run_id = run_id
@@ -31,7 +33,7 @@ class AzureDataFactoryTrigger(BaseTrigger):
         )
 
     async def run(self) -> AsyncIterator["TriggerEvent"]:
-        if self.get_pipeline_run_status:
+        if not self.wait_for_termination:
             yield TriggerEvent(
                 {
                     "status": "success",
@@ -40,6 +42,8 @@ class AzureDataFactoryTrigger(BaseTrigger):
                 }
             )
             return
-        hoook = AzureDataFactoryHookAsync(azure_data_factory_conn_id=self.azure_data_factory_conn_id)
+        hook = AzureDataFactoryHookAsync(azure_data_factory_conn_id=self.azure_data_factory_conn_id)
         while True:
-            status = hoook.get_pipeline_run_status(self.run_id, self.resource_group_name, self.factory_name)
+            status = hook.get_pipeline_run_status(self.run_id, self.resource_group_name, self.factory_name)
+            if
+
